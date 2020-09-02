@@ -1,10 +1,10 @@
 package boids
 
 type Boid struct {
-	id          int
-	position    *Position
-	velocity    *Velocity
-	visualRange int
+	ID          int
+	Position    *Vector
+	Velocity    *Vector
+	VisualRange int
 }
 
 // Neighbours returns the boids in the flock that are within the visual range of b.
