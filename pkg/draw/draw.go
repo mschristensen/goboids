@@ -17,10 +17,14 @@ func DrawFrame(window *pixelgl.Window, world *boids.World) error {
 		return errors.Wrap(err, "new gopher failed")
 	}
 	for _, boid := range world.Boids {
+		// TODO probably draws from top left, so position and scale should consider this
 		sprite.Draw(window, pixel.IM.Moved(pixel.Vec{
 			X: boid.Position.X,
 			Y: boid.Position.Y,
-		}))
+		}).Scaled(pixel.Vec{
+			X: boid.Position.X,
+			Y: boid.Position.Y,
+		}, 0.5))
 	}
 	return nil
 }

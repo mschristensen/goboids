@@ -38,10 +38,17 @@ func NewWorld(width, height int, maxSpeedX, maxSpeedY float64, n int) *World {
 func (w *World) Tick() {
 	for i := range w.Boids {
 		v1 := w.Boids[i].Cohesion(w.Boids)
-		// v2
+		v2 := w.Boids[i].Separation(w.Boids)
 		// v3
 
 		w.Boids[i].Velocity.Add(v1)
+		w.Boids[i].Velocity.Add(v2)
+		if w.Boids[i].Velocity.X > w.MaxSpeedX {
+			w.Boids[i].Velocity.X = w.MaxSpeedX
+		}
+		if w.Boids[i].Velocity.Y > w.MaxSpeedY {
+			w.Boids[i].Velocity.Y = w.MaxSpeedY
+		}
 		w.Boids[i].Position.Add(w.Boids[i].Velocity)
 		w.Boids[i].Position.Modulo(&Vector{
 			X: float64(w.Width),

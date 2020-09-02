@@ -14,9 +14,9 @@ import (
 
 const WorldWidth = 1024
 const WorldHeight = 768
-const MaxSpeedX = 5.0
-const MaxSpeedY = 5.0
-const NumBoids = 20
+const MaxSpeedX = 1.0
+const MaxSpeedY = 1.0
+const NumBoids = 10
 
 func Run() {
 	win, err := pixelgl.NewWindow(pixelgl.WindowConfig{
@@ -32,6 +32,7 @@ func Run() {
 		MaxSpeedX, MaxSpeedY,
 		NumBoids,
 	)
+	throttle := time.Tick(time.Millisecond * 10)
 	for !win.Closed() {
 		err = draw.DrawFrame(win, world)
 		if err != nil {
@@ -39,6 +40,7 @@ func Run() {
 		}
 		world.Tick()
 		win.Update()
+		<-throttle
 	}
 }
 
