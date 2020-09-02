@@ -6,10 +6,11 @@ import "math/rand"
 type World struct {
 	Width, Height        int
 	MaxSpeedX, MaxSpeedY float64
+	Boids                []*Boid
 }
 
-// Initialise returns a set of Boids randomly initialised in the given World.
-func (w *World) Initialise(n int) []*Boid {
+// Initialise sets randomly initialised Boids on the given World.
+func (w *World) Initialise(n int) {
 	boids := make([]*Boid, n)
 	for i := 0; i < n; i++ {
 		boids[i] = &Boid{
@@ -25,5 +26,16 @@ func (w *World) Initialise(n int) []*Boid {
 			VisualRange: 100,
 		}
 	}
-	return boids
+	w.Boids = boids
+}
+
+func (w *World) Tick() {
+	for i := range w.Boids {
+		v1 := w.Boids[i].Cohesion(w.Boids)
+		// v2
+		// v3
+
+		w.Boids[i].Velocity.Add(v1)
+		w.Boids[i].Position.Add(w.Boids[i].Velocity)
+	}
 }

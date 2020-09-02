@@ -10,7 +10,6 @@ import (
 	"github.com/mschristensen/goboids/pkg/boids"
 	"github.com/mschristensen/goboids/pkg/draw"
 	"github.com/pkg/errors"
-	"golang.org/x/image/colornames"
 )
 
 const WorldWidth = 1024
@@ -28,20 +27,19 @@ func Run() {
 	if err != nil {
 		panic(errors.Wrap(err, "new window failed"))
 	}
-	win.Clear(colornames.Aliceblue)
-
-	world := boids.World{
+	world := &boids.World{
 		Width:     WorldWidth,
 		Height:    WorldHeight,
 		MaxSpeedX: MaxSpeedX,
 		MaxSpeedY: MaxSpeedY,
 	}
-	flock := world.Initialise(NumBoids)
+	world.Initialise(NumBoids)
 	for !win.Closed() {
-		err = draw.DrawBoids(win, flock)
+		err = draw.DrawFrame(win, world)
 		if err != nil {
 			panic(errors.Wrap(err, "draw boids failed"))
 		}
+		world.Tick()
 		win.Update()
 	}
 }
