@@ -9,24 +9,30 @@ type World struct {
 	Boids                []*Boid
 }
 
-// Initialise sets randomly initialised Boids on the given World.
-func (w *World) Initialise(n int) {
+// NewWorld instatiates a new World with randomly initialised Boids.
+func NewWorld(width, height int, maxSpeedX, maxSpeedY float64, n int) *World {
 	boids := make([]*Boid, n)
 	for i := 0; i < n; i++ {
 		boids[i] = &Boid{
 			ID: i,
 			Position: &Vector{
-				X: float64(rand.Intn(w.Width)),
-				Y: float64(rand.Intn(w.Height)),
+				X: float64(rand.Intn(width)),
+				Y: float64(rand.Intn(height)),
 			},
 			Velocity: &Vector{
-				X: rand.Float64() * w.MaxSpeedX,
-				Y: rand.Float64() * w.MaxSpeedY,
+				X: rand.Float64() * maxSpeedX,
+				Y: rand.Float64() * maxSpeedY,
 			},
 			VisualRange: 100,
 		}
 	}
-	w.Boids = boids
+	return &World{
+		Width:     width,
+		Height:    height,
+		MaxSpeedX: maxSpeedX,
+		MaxSpeedY: maxSpeedY,
+		Boids:     boids,
+	}
 }
 
 func (w *World) Tick() {
@@ -37,5 +43,9 @@ func (w *World) Tick() {
 
 		w.Boids[i].Velocity.Add(v1)
 		w.Boids[i].Position.Add(w.Boids[i].Velocity)
+		w.Boids[i].Position.Modulo(&Vector{
+			X: float64(w.Width),
+			Y: float64(w.Height),
+		})
 	}
 }

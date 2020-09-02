@@ -14,8 +14,8 @@ import (
 
 const WorldWidth = 1024
 const WorldHeight = 768
-const MaxSpeedX = 10.0
-const MaxSpeedY = 10.0
+const MaxSpeedX = 5.0
+const MaxSpeedY = 5.0
 const NumBoids = 20
 
 func Run() {
@@ -27,13 +27,11 @@ func Run() {
 	if err != nil {
 		panic(errors.Wrap(err, "new window failed"))
 	}
-	world := &boids.World{
-		Width:     WorldWidth,
-		Height:    WorldHeight,
-		MaxSpeedX: MaxSpeedX,
-		MaxSpeedY: MaxSpeedY,
-	}
-	world.Initialise(NumBoids)
+	world := boids.NewWorld(
+		WorldWidth, WorldHeight,
+		MaxSpeedX, MaxSpeedY,
+		NumBoids,
+	)
 	for !win.Closed() {
 		err = draw.DrawFrame(win, world)
 		if err != nil {
