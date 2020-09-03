@@ -42,14 +42,12 @@ func NewWorld(width, height int, maxSpeed, flockSeparation float64, n int) *Worl
 	}
 }
 
-// TODO add neighbours, ideally with a forward facing vision with parameterised breadth
-// TODO add boid size & consider overlap in neighbours calc
+// TODO add rules to avoid objects & predators - include walls in this in addition to Bounds
 // TODO add rules to tend towards food
-// TODO add rules to avoid predators
 // TODO add rules for perching
 // TODO add rules for scattering
 // TODO limit acceleration
-// TODO visualise visual range etc
+// TODO batch draw for efficiency
 func (w *World) Tick() {
 	for i := range w.Boids {
 		neighbours := w.Boids[i].Neighbours(w.Boids)

@@ -22,7 +22,6 @@ func (b *Boid) Neighbours(flock []*Boid) []*Boid {
 		dist := math.Sqrt(
 			math.Pow(flock[i].Position.X-b.Position.X, 2) + math.Pow(flock[i].Position.Y-b.Position.Y, 2),
 		)
-		// boid size
 		if dist <= b.VisualRadius+flock[i].Radius {
 			neighbours = append(neighbours, flock[i])
 		}
