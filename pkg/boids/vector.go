@@ -16,6 +16,11 @@ func (a *Vector) Sub(b *Vector) {
 	a.Y -= b.Y
 }
 
+func (a *Vector) Mul(b *Vector) {
+	a.X *= b.X
+	a.Y *= b.Y
+}
+
 func (a *Vector) Div(b *Vector) {
 	a.X /= b.X
 	a.Y /= b.Y
@@ -41,6 +46,13 @@ func Sub(a, b *Vector) *Vector {
 	return &Vector{
 		X: a.X - b.X,
 		Y: a.Y - b.Y,
+	}
+}
+
+func Mul(a, b *Vector) *Vector {
+	return &Vector{
+		X: a.X * b.X,
+		Y: a.Y * b.Y,
 	}
 }
 

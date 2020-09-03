@@ -1,6 +1,8 @@
 package draw
 
 import (
+	"math"
+
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/mschristensen/goboids/pkg/boids"
@@ -17,14 +19,25 @@ func DrawFrame(window *pixelgl.Window, world *boids.World) error {
 		return errors.Wrap(err, "new gopher failed")
 	}
 	for _, boid := range world.Boids {
-		// TODO probably draws from top left, so position and scale should consider this
-		sprite.Draw(window, pixel.IM.Moved(pixel.Vec{
+		pos := pixel.Vec{
 			X: boid.Position.X,
 			Y: boid.Position.Y,
-		}).Scaled(pixel.Vec{
-			X: boid.Position.X,
-			Y: boid.Position.Y,
-		}, 0.5))
+		}
+		vel := pixel.Vec{
+			X: boid.Velocity.X,
+			Y: boid.Velocity.Y,
+		}
+		theta := vel.Angle()
+		if theta < 0 {
+			theta += 2 * math.Pi
+		}
+		sprite.Draw(
+			window,
+			pixel.IM.Moved(pos).Scaled(pos, 0.4).Rotated(
+				pos,
+				// gopher's head is upright so offset by -90deg to align head with x axis
+				theta-(math.Pi/2),
+			))
 	}
 	return nil
 }

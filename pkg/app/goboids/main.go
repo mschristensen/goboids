@@ -14,8 +14,7 @@ import (
 
 const WorldWidth = 1024
 const WorldHeight = 768
-const MaxSpeedX = 1.0
-const MaxSpeedY = 1.0
+const MaxSpeed = 10.0
 const NumBoids = 10
 
 func Run() {
@@ -27,11 +26,7 @@ func Run() {
 	if err != nil {
 		panic(errors.Wrap(err, "new window failed"))
 	}
-	world := boids.NewWorld(
-		WorldWidth, WorldHeight,
-		MaxSpeedX, MaxSpeedY,
-		NumBoids,
-	)
+	world := boids.NewWorld(WorldWidth, WorldHeight, MaxSpeed, NumBoids)
 	throttle := time.Tick(time.Millisecond * 10)
 	for !win.Closed() {
 		err = draw.DrawFrame(win, world)

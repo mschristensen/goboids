@@ -4,15 +4,16 @@ import "math/rand"
 
 // World describes the boid universe.
 type World struct {
-	Width, Height        int
-	MaxSpeedX, MaxSpeedY float64
-	Boids                []*Boid
+	Width, Height int
+	MaxSpeed      float64
+	Boids         []*Boid
 }
 
 // NewWorld instatiates a new World with randomly initialised Boids.
-func NewWorld(width, height int, maxSpeedX, maxSpeedY float64, n int) *World {
+func NewWorld(width, height int, maxSpeed float64, n int) *World {
 	boids := make([]*Boid, n)
 	for i := 0; i < n; i++ {
+		r := rand.Float64()
 		boids[i] = &Boid{
 			ID: i,
 			Position: &Vector{
@@ -20,39 +21,51 @@ func NewWorld(width, height int, maxSpeedX, maxSpeedY float64, n int) *World {
 				Y: float64(rand.Intn(height)),
 			},
 			Velocity: &Vector{
-				X: rand.Float64() * maxSpeedX,
-				Y: rand.Float64() * maxSpeedY,
+				X: r * maxSpeed,
+				Y: (1 - r) * maxSpeed,
 			},
 			VisualRange: 100,
 		}
 	}
 	return &World{
-		Width:     width,
-		Height:    height,
-		MaxSpeedX: maxSpeedX,
-		MaxSpeedY: maxSpeedY,
-		Boids:     boids,
+		Width:    width,
+		Height:   height,
+		MaxSpeed: maxSpeed,
+		Boids:    boids,
 	}
 }
 
+// TODO add rules to tend towards food
+// TODO add rules to avoid predators
+// TODO add rules for perching
+// TODO add rules for scattering
 func (w *World) Tick() {
-	for i := range w.Boids {
-		v1 := w.Boids[i].Cohesion(w.Boids)
-		v2 := w.Boids[i].Separation(w.Boids)
-		// v3
-
-		w.Boids[i].Velocity.Add(v1)
-		w.Boids[i].Velocity.Add(v2)
-		if w.Boids[i].Velocity.X > w.MaxSpeedX {
-			w.Boids[i].Velocity.X = w.MaxSpeedX
-		}
-		if w.Boids[i].Velocity.Y > w.MaxSpeedY {
-			w.Boids[i].Velocity.Y = w.MaxSpeedY
-		}
-		w.Boids[i].Position.Add(w.Boids[i].Velocity)
-		w.Boids[i].Position.Modulo(&Vector{
+	for _, boid := range w.Boids {
+		v1 := boid.Cohesion(w.Boids, &Vector{
+			X: 0.02,
+			Y: 0.02,
+		})
+		v2 := boid.Separation(w.Boids, &Vector{
+			X: 0.05,
+			Y: 0.05,
+		})
+		v3 := boid.Alignment(w.Boids, &Vector{
+			X: 0.05,
+			Y: 0.05,
+		})
+		v4 := boid.Bound(&Vector{
+			X: 0,
+			Y: 0,
+		}, &Vector{
 			X: float64(w.Width),
 			Y: float64(w.Height),
 		})
+
+		boid.Velocity.Add(v1)
+		boid.Velocity.Add(v2)
+		boid.Velocity.Add(v3)
+		boid.Velocity.Add(v4)
+		boid.LimitVelocity(w.MaxSpeed)
+		boid.Position.Add(boid.Velocity)
 	}
 }
