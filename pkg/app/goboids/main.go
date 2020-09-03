@@ -14,8 +14,9 @@ import (
 
 const WorldWidth = 1024
 const WorldHeight = 768
-const MaxSpeed = 10.0
-const NumBoids = 10
+const MaxSpeed = 5.0
+const FlockSeparation = 50
+const NumBoids = 15
 
 func Run() {
 	win, err := pixelgl.NewWindow(pixelgl.WindowConfig{
@@ -26,7 +27,8 @@ func Run() {
 	if err != nil {
 		panic(errors.Wrap(err, "new window failed"))
 	}
-	world := boids.NewWorld(WorldWidth, WorldHeight, MaxSpeed, NumBoids)
+	win.SetSmooth(true)
+	world := boids.NewWorld(WorldWidth, WorldHeight, MaxSpeed, FlockSeparation, NumBoids)
 	throttle := time.Tick(time.Millisecond * 10)
 	for !win.Closed() {
 		err = draw.DrawFrame(win, world)

@@ -12,11 +12,11 @@ func (b *Boid) Cohesion(flock []*Boid, w float64) pixel.Vec {
 	return v.Scaled(1 / float64(len(flock)-1)).Sub(b.Position).Scaled(w)
 }
 
-func (b *Boid) Separation(flock []*Boid, w float64) pixel.Vec {
+func (b *Boid) Separation(flock []*Boid, dist, w float64) pixel.Vec {
 	v := pixel.Vec{}
 	for _, boid := range flock {
 		if boid.ID != b.ID {
-			if boid.Position.Sub(b.Position).Len() < 100 {
+			if boid.Position.Sub(b.Position).Len() < dist {
 				v = v.Sub(boid.Position.Sub(b.Position))
 			}
 		}
