@@ -1,9 +1,12 @@
 package boids
 
+import "github.com/faiface/pixel"
+
+// Boid describes a single boid.
 type Boid struct {
 	ID          int
-	Position    *Vector
-	Velocity    *Vector
+	Position    pixel.Vec
+	Velocity    pixel.Vec
 	VisualRange int
 }
 

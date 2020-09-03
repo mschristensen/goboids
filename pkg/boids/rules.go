@@ -1,52 +1,41 @@
 package boids
 
-func (b *Boid) Cohesion(flock []*Boid, w *Vector) *Vector {
-	v := &Vector{}
+import "github.com/faiface/pixel"
+
+func (b *Boid) Cohesion(flock []*Boid, w float64) pixel.Vec {
+	v := pixel.Vec{}
 	for _, boid := range flock {
 		if boid.ID != b.ID {
-			v.Add(boid.Position)
+			v = v.Add(boid.Position)
 		}
 	}
-	v.Div(&Vector{
-		X: float64(len(flock) - 1),
-		Y: float64(len(flock) - 1),
-	})
-	v.Sub(b.Position)
-	v.Mul(w)
-	return v
+	return v.Scaled(1 / float64(len(flock)-1)).Sub(b.Position).Scaled(w)
 }
 
-func (b *Boid) Separation(flock []*Boid, w *Vector) *Vector {
-	v := &Vector{}
+func (b *Boid) Separation(flock []*Boid, w float64) pixel.Vec {
+	v := pixel.Vec{}
 	for _, boid := range flock {
 		if boid.ID != b.ID {
-			if Sub(boid.Position, b.Position).Magnitude() < 100 {
-				v.Sub(Sub(boid.Position, b.Position))
+			if boid.Position.Sub(b.Position).Len() < 100 {
+				v = v.Sub(boid.Position.Sub(b.Position))
 			}
 		}
 	}
-	v.Mul(w)
-	return v
+	return v.Scaled(w)
 }
 
-func (b *Boid) Alignment(flock []*Boid, w *Vector) *Vector {
-	v := &Vector{}
+func (b *Boid) Alignment(flock []*Boid, w float64) pixel.Vec {
+	v := pixel.Vec{}
 	for _, boid := range flock {
 		if boid.ID != b.ID {
-			v.Add(boid.Velocity)
+			v = v.Add(boid.Velocity)
 		}
 	}
-	v.Div(&Vector{
-		X: float64(len(flock) - 1),
-		Y: float64(len(flock) - 1),
-	})
-	v.Sub(b.Velocity)
-	v.Mul(w)
-	return v
+	return v.Scaled(1 / float64(len(flock)-1)).Sub(b.Velocity).Scaled(w)
 }
 
-func (b *Boid) Bound(min, max *Vector) *Vector {
-	v := &Vector{}
+func (b *Boid) Bound(min, max pixel.Vec) pixel.Vec {
+	v := pixel.Vec{}
 	if b.Position.X < min.X {
 		v.X = 10
 	} else if b.Position.X > max.X {
@@ -61,14 +50,7 @@ func (b *Boid) Bound(min, max *Vector) *Vector {
 }
 
 func (b *Boid) LimitVelocity(limit float64) {
-	if b.Velocity.Magnitude() > limit {
-		b.Velocity.Div(&Vector{
-			X: b.Velocity.Magnitude(),
-			Y: b.Velocity.Magnitude(),
-		})
-		b.Velocity.Mul(&Vector{
-			X: limit,
-			Y: limit,
-		})
+	if b.Velocity.Len() > limit {
+		b.Velocity = b.Velocity.Scaled(1 / b.Velocity.Len()).Scaled(limit)
 	}
 }

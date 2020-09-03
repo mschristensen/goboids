@@ -19,22 +19,14 @@ func DrawFrame(window *pixelgl.Window, world *boids.World) error {
 		return errors.Wrap(err, "new gopher failed")
 	}
 	for _, boid := range world.Boids {
-		pos := pixel.Vec{
-			X: boid.Position.X,
-			Y: boid.Position.Y,
-		}
-		vel := pixel.Vec{
-			X: boid.Velocity.X,
-			Y: boid.Velocity.Y,
-		}
-		theta := vel.Angle()
+		theta := boid.Velocity.Angle()
 		if theta < 0 {
 			theta += 2 * math.Pi
 		}
 		sprite.Draw(
 			window,
-			pixel.IM.Moved(pos).Scaled(pos, 0.4).Rotated(
-				pos,
+			pixel.IM.Moved(boid.Position).Scaled(boid.Position, 0.4).Rotated(
+				boid.Position,
 				// gopher's head is upright so offset by -90deg to align head with x axis
 				theta-(math.Pi/2),
 			))
