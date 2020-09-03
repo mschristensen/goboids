@@ -4,16 +4,26 @@ import "github.com/faiface/pixel"
 
 func (b *Boid) Cohesion(flock []*Boid, w float64) pixel.Vec {
 	v := pixel.Vec{}
+	if len(flock) == 0 {
+		return v
+	}
 	for _, boid := range flock {
 		if boid.ID != b.ID {
 			v = v.Add(boid.Position)
 		}
 	}
-	return v.Scaled(1 / float64(len(flock)-1)).Sub(b.Position).Scaled(w)
+	n := float64(len(flock) - 1)
+	if n <= 0 {
+		n = 1
+	}
+	return v.Scaled(1 / n).Sub(b.Position).Scaled(w)
 }
 
 func (b *Boid) Separation(flock []*Boid, dist, w float64) pixel.Vec {
 	v := pixel.Vec{}
+	if len(flock) == 0 {
+		return v
+	}
 	for _, boid := range flock {
 		if boid.ID != b.ID {
 			if boid.Position.Sub(b.Position).Len() < dist {
@@ -26,12 +36,19 @@ func (b *Boid) Separation(flock []*Boid, dist, w float64) pixel.Vec {
 
 func (b *Boid) Alignment(flock []*Boid, w float64) pixel.Vec {
 	v := pixel.Vec{}
+	if len(flock) == 0 {
+		return v
+	}
 	for _, boid := range flock {
 		if boid.ID != b.ID {
 			v = v.Add(boid.Velocity)
 		}
 	}
-	return v.Scaled(1 / float64(len(flock)-1)).Sub(b.Velocity).Scaled(w)
+	n := float64(len(flock) - 1)
+	if n <= 0 {
+		n = 1
+	}
+	return v.Scaled(1 / n).Sub(b.Velocity).Scaled(w)
 }
 
 func (b *Boid) Bound(min, max pixel.Vec) pixel.Vec {

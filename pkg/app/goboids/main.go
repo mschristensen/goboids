@@ -12,9 +12,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-const WorldWidth = 1024
-const WorldHeight = 768
-const MaxSpeed = 5.0
+const WorldWidth = 1400
+const WorldHeight = 800
+const MaxSpeed = 10.0
 const FlockSeparation = 50
 const NumBoids = 15
 
