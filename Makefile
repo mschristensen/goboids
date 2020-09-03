@@ -9,3 +9,7 @@ build:
 .PHONY: run
 run:
 	@./bin/$(cmd)
+
+.PHONY: run_watch
+run_watch:
+	@git ls-files | entr -r go run ./cmd/$(cmd)/main.go
