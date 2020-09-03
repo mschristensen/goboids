@@ -29,8 +29,8 @@ func NewWorld(width, height int, maxSpeed, flockSeparation float64, n int) *Worl
 				X: r * maxSpeed,
 				Y: (1 - r) * maxSpeed,
 			},
-			Radius:       50,
-			VisualRadius: 100,
+			Radius:       30,
+			VisualRadius: 60,
 		}
 	}
 	return &World{

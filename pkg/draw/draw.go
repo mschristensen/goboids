@@ -33,11 +33,15 @@ func DrawFrame(window *pixelgl.Window, world *boids.World) error {
 			0x33,
 		}
 		imd.Push(boid.Position)
-		imd.Circle(boid.Radius, 0)
+		imd.Circle(boid.VisualRadius, 0)
 		imd.Draw(window)
 		sprite.Draw(
 			window,
-			pixel.IM.Moved(boid.Position).Scaled(boid.Position, 0.4).Rotated(
+			pixel.IM.Moved(boid.Position).Scaled(
+				boid.Position,
+				// size boid according to radius, using the original size of sprite
+				boid.Radius/float64(sprites.GophersStrip.SpriteWidth),
+			).Rotated(
 				boid.Position,
 				// gopher's head is upright so offset by -90deg to align head with x axis
 				theta-(math.Pi/2),
