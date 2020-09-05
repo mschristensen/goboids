@@ -47,7 +47,6 @@ func NewWorld(width, height int, maxSpeed, flockSeparation float64, n int) *Worl
 // TODO add rules for perching
 // TODO add rules for scattering
 // TODO limit acceleration
-// TODO batch draw for efficiency
 func (w *World) Tick() {
 	for i := range w.Boids {
 		neighbours := w.Boids[i].Neighbours(w.Boids)

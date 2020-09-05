@@ -19,38 +19,42 @@ func Assets() *packr.Box {
 
 // Strip describes a strip of sprites.
 type Strip struct {
-	Asset        string
-	Width        int
-	Height       int
-	SpriteWidth  int
-	SpriteHeight int
-}
-
-// Sprite describes a single sprite in a strip.
-type Sprite struct {
-	X, Y int
+	Asset        pixel.Picture
+	Width        float64
+	Height       float64
+	SpriteWidth  float64
+	SpriteHeight float64
 }
 
 // Bounds returns the bounds of the sprite at the given position in the sprite given
 // sprite strip. The coordinate (0, 0) corresponds to the bottom left sprite.
-func (strip *Strip) Bounds(sprite *Sprite) (*pixel.Rect, error) {
-	if sprite.X > strip.Width {
-		return nil, errors.Errorf("x cannot be > 6, got %d", sprite.X)
+func (strip *Strip) Bounds(loc pixel.Vec) (*pixel.Rect, error) {
+	if loc.X > strip.Width {
+		return nil, errors.Errorf("x cannot be > 6, got %d", loc.X)
 	}
-	if sprite.X < 0 {
-		return nil, errors.Errorf("x cannot be < 0, got %d", sprite.X)
+	if loc.X < 0 {
+		return nil, errors.Errorf("x cannot be < 0, got %d", loc.X)
 	}
-	if sprite.Y > strip.Height {
-		return nil, errors.Errorf("y cannot be > 4, got %d", sprite.Y)
+	if loc.Y > strip.Height {
+		return nil, errors.Errorf("y cannot be > 4, got %d", loc.Y)
 	}
-	if sprite.Y < 0 {
-		return nil, errors.Errorf("y cannot be < 0, got %d", sprite.Y)
+	if loc.Y < 0 {
+		return nil, errors.Errorf("y cannot be < 0, got %d", loc.Y)
 	}
 	bounds := pixel.R(
-		float64(sprite.X)*96,
-		float64(sprite.Y)*96,
-		(float64(sprite.X)+1)*96,
-		(float64(sprite.Y)+1)*96,
+		float64(loc.X)*float64(strip.SpriteWidth),
+		float64(loc.Y)*float64(strip.SpriteHeight),
+		(float64(loc.X)+1)*float64(strip.SpriteWidth),
+		(float64(loc.Y)+1)*float64(strip.SpriteHeight),
 	)
 	return &bounds, nil
+}
+
+// NewSprite returns a Sprite from the given location in the Strip.
+func (strip *Strip) NewSprite(loc pixel.Vec) (*pixel.Sprite, error) {
+	bounds, err := strip.Bounds(loc)
+	if err != nil {
+		return nil, errors.Wrap(err, "get bounds failed")
+	}
+	return pixel.NewSprite(strip.Asset, *bounds), nil
 }

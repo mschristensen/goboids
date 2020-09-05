@@ -9,40 +9,30 @@ import (
 	"github.com/pkg/errors"
 )
 
-// GophersStrip is the sprite Strip for the gophers.
-var GophersStrip = &Strip{
-	Asset:        "gophers.png",
-	Width:        672,
-	Height:       480,
-	SpriteWidth:  96,
-	SpriteHeight: 96,
-}
-
-// Gophers maps Gopher names to Sprites.
-var Gophers = map[string]*Sprite{
+// Gophers maps Gopher names to positions in the sprite strip.
+var Gophers = map[string]pixel.Vec{
 	"normal": {
 		X: 0,
 		Y: 4,
 	},
 }
 
-// NewGopher returns a new pixel Sprite for the gopher with the specified name.
-func NewGopher(name string) (*pixel.Sprite, error) {
-	imgData, err := Assets().FindString(GophersStrip.Asset)
+// GophersStrip returns the sprite strip for the gophers.
+func GophersStrip() (*Strip, error) {
+	assetName := "gophers.png"
+	imgData, err := Assets().FindString(assetName)
 	if err != nil {
-		return nil, errors.Wrapf(err, "find asset '%s' failed", GophersStrip.Asset)
+		return nil, errors.Wrapf(err, "find asset '%s' failed", assetName)
 	}
 	img, _, err := image.Decode(strings.NewReader(imgData))
 	if err != nil {
 		return nil, errors.Wrap(err, "decode image failed")
 	}
-	gopher, ok := Gophers[name]
-	if !ok {
-		return nil, errors.Wrapf(err, "gopher with name '%s' not found", name)
-	}
-	bounds, err := GophersStrip.Bounds(gopher)
-	if err != nil {
-		return nil, errors.Wrap(err, "get bounds failed")
-	}
-	return pixel.NewSprite(pixel.PictureDataFromImage(img), *bounds), nil
+	return &Strip{
+		Asset:        pixel.PictureDataFromImage(img),
+		Width:        672,
+		Height:       480,
+		SpriteWidth:  96,
+		SpriteHeight: 96,
+	}, nil
 }

@@ -1,6 +1,7 @@
 package goboids
 
 import (
+	"fmt"
 	_ "image/png"
 	"math/rand"
 	"time"
@@ -9,35 +10,58 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/mschristensen/goboids/pkg/boids"
 	"github.com/mschristensen/goboids/pkg/draw"
+	"github.com/mschristensen/goboids/pkg/sprites"
 	"github.com/pkg/errors"
 )
 
-const WorldWidth = 1400
-const WorldHeight = 800
-const MaxSpeed = 10.0
-const FlockSeparation = 50
-const NumBoids = 15
+const (
+	WorldWidth      = 1400
+	WorldHeight     = 800
+	MaxSpeed        = 10.0
+	FlockSeparation = 50
+	NumBoids        = 15
+)
 
-func Run() {
-	win, err := pixelgl.NewWindow(pixelgl.WindowConfig{
-		Title:  "GoBoids",
-		Bounds: pixel.R(0, 0, WorldWidth, WorldHeight),
+func createWindow(title string, width, height float64) (*pixelgl.Window, error) {
+	window, err := pixelgl.NewWindow(pixelgl.WindowConfig{
+		Title:  title,
+		Bounds: pixel.R(0, 0, width, height),
 		VSync:  true,
 	})
 	if err != nil {
-		panic(errors.Wrap(err, "new window failed"))
+		return nil, errors.Wrap(err, "new window failed")
 	}
-	win.SetSmooth(true)
+	window.SetSmooth(true)
+	return window, nil
+}
+
+func Run() {
+	window, err := createWindow("GoBoids", WorldWidth, WorldHeight)
+	if err != nil {
+		panic(errors.Wrap(err, "create window failed"))
+	}
+	strip, err := sprites.GophersStrip()
+	if err != nil {
+		panic(errors.Wrap(err, "get gophers strip failed"))
+	}
+	drawer := draw.NewDrawer(strip)
 	world := boids.NewWorld(WorldWidth, WorldHeight, MaxSpeed, FlockSeparation, NumBoids)
-	throttle := time.Tick(time.Millisecond * 10)
-	for !win.Closed() {
-		err = draw.DrawFrame(win, world)
+	frames := 0
+	second := time.Tick(time.Second)
+	for !window.Closed() {
+		err = drawer.DrawFrame(window, world)
 		if err != nil {
 			panic(errors.Wrap(err, "draw boids failed"))
 		}
 		world.Tick()
-		win.Update()
-		<-throttle
+		window.Update()
+		frames++
+		select {
+		case <-second:
+			window.SetTitle(fmt.Sprintf("%s | FPS: %d", "GoBoids", frames))
+			frames = 0
+		default:
+		}
 	}
 }
 

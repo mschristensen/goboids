@@ -13,10 +13,25 @@ import (
 	"golang.org/x/image/colornames"
 )
 
-// DrawFrame draws the given world on the window.
-func DrawFrame(window *pixelgl.Window, world *boids.World) error {
+// Drawer enables batch drawing sprites from a given strip.
+type Drawer struct {
+	Batch       *pixel.Batch
+	SpriteStrip *sprites.Strip
+}
+
+// NewDrawer creates a new Drawer for the given sprite strip.
+func NewDrawer(strip *sprites.Strip) *Drawer {
+	return &Drawer{
+		Batch:       pixel.NewBatch(&pixel.TrianglesData{}, strip.Asset),
+		SpriteStrip: strip,
+	}
+}
+
+// DrawFrame draws the world on the window.
+func (d *Drawer) DrawFrame(window *pixelgl.Window, world *boids.World) error {
 	window.Clear(colornames.Aliceblue)
-	sprite, err := sprites.NewGopher("normal")
+	d.Batch.Clear()
+	sprite, err := d.SpriteStrip.NewSprite(sprites.Gophers["normal"])
 	if err != nil {
 		return errors.Wrap(err, "new gopher failed")
 	}
@@ -26,6 +41,8 @@ func DrawFrame(window *pixelgl.Window, world *boids.World) error {
 			theta += 2 * math.Pi
 		}
 		imd := imdraw.New(nil)
+
+		// Render visual radius of boid
 		imd.Color = color.RGBA{
 			colornames.Blue.R,
 			colornames.Blue.G,
@@ -34,13 +51,15 @@ func DrawFrame(window *pixelgl.Window, world *boids.World) error {
 		}
 		imd.Push(boid.Position)
 		imd.Circle(boid.VisualRadius, 0)
-		imd.Draw(window)
+		imd.Draw(d.Batch)
+
+		// Render boid itself as a Gopher
 		sprite.Draw(
-			window,
+			d.Batch,
 			pixel.IM.Moved(boid.Position).Scaled(
 				boid.Position,
 				// size boid according to radius, using the original size of sprite
-				boid.Radius/float64(sprites.GophersStrip.SpriteWidth),
+				boid.Radius/float64(d.SpriteStrip.SpriteWidth),
 			).Rotated(
 				boid.Position,
 				// gopher's head is upright so offset by -90deg to align head with x axis
@@ -48,5 +67,6 @@ func DrawFrame(window *pixelgl.Window, world *boids.World) error {
 			),
 		)
 	}
+	d.Batch.Draw(window)
 	return nil
 }
