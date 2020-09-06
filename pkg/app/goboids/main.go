@@ -15,11 +15,9 @@ import (
 )
 
 const (
-	WorldWidth      = 1400
-	WorldHeight     = 800
-	MaxSpeed        = 5.0
-	FlockSeparation = 80
-	NumBoids        = 15
+	WorldWidth  = 1400
+	WorldHeight = 800
+	NumBoids    = 15
 )
 
 func createWindow(title string, width, height float64) (*pixelgl.Window, error) {
@@ -45,7 +43,7 @@ func Run() {
 		panic(errors.Wrap(err, "get gophers strip failed"))
 	}
 	drawer := draw.NewDrawer(strip)
-	world := boids.NewWorld(WorldWidth, WorldHeight, MaxSpeed, FlockSeparation, NumBoids)
+	world := boids.NewWorld(WorldWidth, WorldHeight, NumBoids)
 	frames := 0
 	second := time.Tick(time.Second)
 	for !window.Closed() {

@@ -8,12 +8,14 @@ import (
 
 // Boid describes a single boid.
 type Boid struct {
-	ID           int
-	Alive        bool
-	Position     pixel.Vec
-	Velocity     pixel.Vec
-	Radius       float64
-	VisualRadius float64
+	ID                 int
+	Alive              bool
+	Position           pixel.Vec
+	Velocity           pixel.Vec
+	Radius             float64
+	VisualRadius       float64
+	MaxSpeed           float64
+	SeparationDistance float64
 }
 
 // Neighbours returns the boids in the flock that are within the field of view of b.
