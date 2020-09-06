@@ -21,7 +21,8 @@ func NewWorld(width, height int, maxSpeed, flockSeparation float64, n int) *Worl
 	for i := 0; i < n; i++ {
 		r := rand.Float64()
 		boids[i] = &Boid{
-			ID: i,
+			ID:    i,
+			Alive: true,
 			Position: pixel.Vec{
 				X: float64(rand.Intn(width)),
 				Y: float64(rand.Intn(height)),
@@ -37,7 +38,8 @@ func NewWorld(width, height int, maxSpeed, flockSeparation float64, n int) *Worl
 	predators := make([]*Boid, 1)
 	r := rand.Float64()
 	predators[0] = &Boid{
-		ID: n,
+		ID:    n,
+		Alive: true,
 		Position: pixel.Vec{
 			X: float64(rand.Intn(width)),
 			Y: float64(rand.Intn(height)),
@@ -47,7 +49,7 @@ func NewWorld(width, height int, maxSpeed, flockSeparation float64, n int) *Worl
 			Y: (1 - r) * maxSpeed,
 		},
 		Radius:       80,
-		VisualRadius: 100,
+		VisualRadius: 130,
 	}
 	return &World{
 		Width:           width,

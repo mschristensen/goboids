@@ -74,10 +74,13 @@ func (b *Boid) Hunt(flock []*Boid, w float64) pixel.Vec {
 			}
 		}
 	}
-	if target != nil {
-		return b.TendToLocation(target.Position, w)
+	if target == nil {
+		return v
 	}
-	return v
+	if minDistance < target.Radius {
+		target.Alive = false
+	}
+	return b.TendToLocation(target.Position, w)
 }
 
 func (b *Boid) Bound(min, max pixel.Vec) pixel.Vec {

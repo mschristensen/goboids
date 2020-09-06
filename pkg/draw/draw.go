@@ -32,6 +32,9 @@ func (d *Drawer) DrawFrame(window *pixelgl.Window, world *boids.World) error {
 	window.Clear(colornames.Aliceblue)
 	d.Batch.Clear()
 	for i, boid := range append(world.Boids, world.Predators...) {
+		if !boid.Alive {
+			continue
+		}
 		isPredator := i >= len(world.Boids)
 		gopher := sprites.Gophers["normal"]
 		if isPredator {
