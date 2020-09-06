@@ -2,10 +2,12 @@ package boids
 
 import (
 	"math"
+	"math/rand"
 
 	"github.com/faiface/pixel"
 )
 
+// Cohesion steers the Boid to travel towards the center of the flock.
 func (b *Boid) Cohesion(flock []*Boid, w float64) pixel.Vec {
 	v := pixel.Vec{}
 	if len(flock) == 0 {
@@ -23,6 +25,8 @@ func (b *Boid) Cohesion(flock []*Boid, w float64) pixel.Vec {
 	return v.Scaled(1 / n).Sub(b.Position).Scaled(w)
 }
 
+// Separation steers the the Boid to maintain the minimum separation distances with
+// other Boids in the flock.
 func (b *Boid) Separation(flock []*Boid, w float64) pixel.Vec {
 	v := pixel.Vec{}
 	if len(flock) == 0 {
@@ -38,6 +42,8 @@ func (b *Boid) Separation(flock []*Boid, w float64) pixel.Vec {
 	return v.Scaled(w)
 }
 
+// Alignment steers the Boid to align it's velocity direction with the
+// other Boids in the flock.
 func (b *Boid) Alignment(flock []*Boid, w float64) pixel.Vec {
 	v := pixel.Vec{}
 	if len(flock) == 0 {
@@ -83,31 +89,36 @@ func (b *Boid) Hunt(flock []*Boid, w float64) pixel.Vec {
 	return b.TendToLocation(target.Position, w)
 }
 
+// Bound keeps the Boid within the given bounds by modifying its velocity.
 func (b *Boid) Bound(min, max pixel.Vec) pixel.Vec {
 	v := pixel.Vec{}
 	if b.Position.X < min.X {
-		v.X = 10
+		v.X = rand.Float64() * 10.0
 	} else if b.Position.X > max.X {
-		v.X = -10
+		v.X = -rand.Float64() * 10.0
 	}
 	if b.Position.Y < min.Y {
-		v.Y = 10
+		v.Y = rand.Float64() * 10.0
 	} else if b.Position.Y > max.Y {
-		v.Y = -10
+		v.Y = -rand.Float64() * 10.0
 	}
 	return v
 }
 
+// LimitVelocity ensures the magnitude of the Boid's velocity is below the given limit.
+// If not, it is set to a vector of equivalent direction but of `limit` magnitude.
 func (b *Boid) LimitVelocity(limit float64) {
 	if b.Velocity.Len() > limit {
 		b.Velocity = b.Velocity.Scaled(1 / b.Velocity.Len()).Scaled(limit)
 	}
 }
 
+// TendToLocation returns a vector pointing towards the given location, weighted by w.
 func (b *Boid) TendToLocation(vec pixel.Vec, w float64) pixel.Vec {
 	return vec.Sub(b.Position).Scaled(w)
 }
 
+// AvoidLocation returns a vector pointing away from the given location, weighted by w.
 func (b *Boid) AvoidLocation(vec pixel.Vec, w float64) pixel.Vec {
 	return b.TendToLocation(vec, -w)
 }

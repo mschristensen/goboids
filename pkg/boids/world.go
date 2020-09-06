@@ -62,11 +62,7 @@ func NewWorld(width, height int, n int) *World {
 	}
 }
 
-// TODO add rules to avoid objects
-// TODO add rules to avoid flying into walls
-// TODO add rules to tend towards food
-// TODO add rules for perching
-// TODO limit acceleration
+// TickBoids updates the World's boids positions and velocities according to the rules.
 func (w *World) TickBoids() {
 	for i := range w.Boids {
 		var vectors []pixel.Vec
@@ -93,25 +89,29 @@ func (w *World) TickBoids() {
 	}
 }
 
+// TickPredators updates the World's predators positions and velocities according to the rules.
 func (w *World) TickPredators() {
 	for i := range w.Predators {
 		neighbours := w.Predators[i].Neighbours(w.Boids)
-		v1 := w.Predators[i].Hunt(neighbours, 0.05)
-		v2 := w.Predators[i].Bound(pixel.Vec{
+		var vectors []pixel.Vec
+		vectors = append(vectors, w.Predators[i].Hunt(neighbours, 0.05))
+		vectors = append(vectors, w.Predators[i].Bound(pixel.Vec{
 			X: 0,
 			Y: 0,
 		}, pixel.Vec{
 			X: float64(w.Width),
 			Y: float64(w.Height),
-		})
+		}))
 
-		w.Predators[i].Velocity = w.Predators[i].Velocity.Add(v1)
-		w.Predators[i].Velocity = w.Predators[i].Velocity.Add(v2)
+		for _, vector := range vectors {
+			w.Predators[i].Velocity = w.Predators[i].Velocity.Add(vector)
+		}
 		w.Predators[i].LimitVelocity(w.Predators[i].MaxSpeed)
 		w.Predators[i].Position = w.Predators[i].Position.Add(w.Predators[i].Velocity)
 	}
 }
 
+// Tick updates the World according to the rules.
 func (w *World) Tick() {
 	w.TickBoids()
 	w.TickPredators()
