@@ -75,7 +75,7 @@ func (d *Drawer) DrawFrame(window *pixelgl.Window, world *boids.World) error {
 			pixel.IM.Moved(boid.Position).Scaled(
 				boid.Position,
 				// size boid according to radius, using the original size of sprite
-				boid.Radius/float64(d.SpriteStrip.SpriteWidth),
+				2*boid.Radius/float64(d.SpriteStrip.SpriteWidth),
 			).Rotated(
 				boid.Position,
 				// gopher's head is upright so offset by -90deg to align head with x axis
