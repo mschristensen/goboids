@@ -17,8 +17,8 @@ import (
 const (
 	WorldWidth      = 1400
 	WorldHeight     = 800
-	MaxSpeed        = 10.0
-	FlockSeparation = 50
+	MaxSpeed        = 5.0
+	FlockSeparation = 80
 	NumBoids        = 15
 )
 

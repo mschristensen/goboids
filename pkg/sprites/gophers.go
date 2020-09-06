@@ -12,8 +12,12 @@ import (
 // Gophers maps Gopher names to positions in the sprite strip.
 var Gophers = map[string]pixel.Vec{
 	"normal": {
-		X: 0,
-		Y: 4,
+		X: 1,
+		Y: 3,
+	},
+	"predator": {
+		X: 3,
+		Y: 2,
 	},
 }
 

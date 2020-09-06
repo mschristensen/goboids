@@ -31,29 +31,42 @@ func NewDrawer(strip *sprites.Strip) *Drawer {
 func (d *Drawer) DrawFrame(window *pixelgl.Window, world *boids.World) error {
 	window.Clear(colornames.Aliceblue)
 	d.Batch.Clear()
-	sprite, err := d.SpriteStrip.NewSprite(sprites.Gophers["normal"])
-	if err != nil {
-		return errors.Wrap(err, "new gopher failed")
-	}
-	for _, boid := range world.Boids {
-		theta := boid.Velocity.Angle()
-		if theta < 0 {
-			theta += 2 * math.Pi
+	for i, boid := range append(world.Boids, world.Predators...) {
+		isPredator := i >= len(world.Boids)
+		gopher := sprites.Gophers["normal"]
+		if isPredator {
+			gopher = sprites.Gophers["predator"]
 		}
-		imd := imdraw.New(nil)
+		sprite, err := d.SpriteStrip.NewSprite(gopher)
+		if err != nil {
+			return errors.Wrap(err, "new gopher failed")
+		}
 
 		// Render visual radius of boid
+		imd := imdraw.New(nil)
 		imd.Color = color.RGBA{
 			colornames.Blue.R,
 			colornames.Blue.G,
 			colornames.Blue.B,
 			0x33,
 		}
+		if isPredator {
+			imd.Color = color.RGBA{
+				colornames.Red.R,
+				colornames.Red.G,
+				colornames.Red.B,
+				0x33,
+			}
+		}
 		imd.Push(boid.Position)
 		imd.Circle(boid.VisualRadius, 0)
 		imd.Draw(d.Batch)
 
 		// Render boid itself as a Gopher
+		theta := boid.Velocity.Angle()
+		if theta < 0 {
+			theta += 2 * math.Pi
+		}
 		sprite.Draw(
 			d.Batch,
 			pixel.IM.Moved(boid.Position).Scaled(
